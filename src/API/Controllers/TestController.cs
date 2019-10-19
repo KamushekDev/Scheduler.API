@@ -20,13 +20,12 @@ namespace API.Controllers
 
         // GET: api/Test
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            var strings = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>()
-                .Select(x => $"{x.Key}:{x.Value}").ToList();
+            var variables = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>()
+                .Select(x => new {name=x.Key, value=x.Value}).ToList();
 
-            strings.Insert(0, _environment.EnvironmentName);
-            return strings;
+            return new OkObjectResult(variables);
         }
 
         // GET: api/Test/5
