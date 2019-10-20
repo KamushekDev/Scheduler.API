@@ -1,15 +1,19 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0 as build
 WORKDIR /app
 
+COPY src/API/API.csproj src/API/API.csproj
+COPY src/Contracts/*.csproj src/Contracts/
+COPY src/Data.Dapper/*.csproj src/Data.Dapper/
+COPY *.sln .
+# ENTRYPOINT tail -f /dev/null & wait
+RUN dotnet restore
+
 RUN dotnet dev-certs https -ep /aspnetapp.pfx -p Timetable
 COPY . ./
-# RUN dotnet dev-certs https --trustыыыы
-RUN dotnet publish -c Release -o outы
+RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.0 as final
 
-ENV ASPNETCORE_URLS https://+:443;http://+:8080
-ENV ASPNETCORE_HTTPS_PORT 44310
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password Timetable
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path aspnetapp.pfx
 
