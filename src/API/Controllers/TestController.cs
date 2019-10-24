@@ -23,7 +23,16 @@ namespace API.Controllers
         public IActionResult Get()
         {
             var variables = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>()
-                .Select(x => new {name=x.Key, value=x.Value}).ToList();
+                .Select(x => new {name = x.Key, value = x.Value}).ToList();
+
+            variables.Add(new
+            {
+                name = (object) "user ip address",
+                value = (object) Request.HttpContext.Connection.RemoteIpAddress.ToString()
+            });
+
+            var headers = Request.Headers.Select(x => new {name = (object) x.Key, value = (object) x.Value.ToString()});
+            variables.AddRange(headers);
 
             return new OkObjectResult(variables);
         }
