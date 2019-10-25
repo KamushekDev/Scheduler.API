@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,13 +14,6 @@ namespace API
 {
     public class Startup
     {
-        private readonly ILogger _logger;
-
-        public Startup(ILogger logger)
-        {
-            _logger = logger;
-        }
-        
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -27,15 +21,26 @@ namespace API
             services.AddCors();
             services.AddControllers();
 
+            var logger = new StreamWriter(File.Create("log.txt"));
+
+            logger.WriteLine("Hello there!");
+
             services.Configure<ForwardedHeadersOptions>(options =>
             {
+                logger.WriteLine("start search");
+                logger.Flush();
                 options.ForwardedHeaders = ForwardedHeaders.All;
                 var ips = Dns.GetHostAddresses("nginx");
+                logger.WriteLine("searched");
+                logger.Flush();
 
-                _logger.LogInformation($"ips.Count = ", ips.Length);
+
+                logger.WriteLine($"ips.Count = {ips.Length}");
+                logger.Flush();
                 foreach (var ip in ips)
                 {
-                    _logger.LogInformation(ip.ToString());
+                    logger.WriteLine(ip.ToString());
+                    logger.Flush();
                     options.KnownProxies.Add(ip);
                 }
 
@@ -45,6 +50,7 @@ namespace API
                 //options.KnownProxies.Clear();
                 //options.KnownProxies.Add(Ip);
             });
+            logger.Close();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +61,14 @@ namespace API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.All
+            });
+
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod());
+
+            app.UseAuthentication();
 
             app.UseRouting();
 
