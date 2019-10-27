@@ -1,14 +1,10 @@
-using System;
-using System.IO;
-using System.Linq;
+using System.Collections.Generic;
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace API
 {
@@ -20,37 +16,6 @@ namespace API
         {
             services.AddCors();
             services.AddControllers();
-
-            var logger = new StreamWriter(File.Create("log.txt"));
-
-            logger.WriteLine("Hello there!");
-
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                logger.WriteLine("start search");
-                logger.Flush();
-                options.ForwardedHeaders = ForwardedHeaders.All;
-                var ips = Dns.GetHostAddresses("nginx");
-                logger.WriteLine("searched");
-                logger.Flush();
-
-
-                logger.WriteLine($"ips.Count = {ips.Length}");
-                logger.Flush();
-                foreach (var ip in ips)
-                {
-                    logger.WriteLine(ip.ToString());
-                    logger.Flush();
-                    options.KnownProxies.Add(ip);
-                }
-
-                //options.KnownNetworks.Clear();
-                //var localNetwork = new IPNetwork(IPAddress.Parse("localhost"), 24);
-                //options.KnownNetworks.Add(localNetwork);
-                //options.KnownProxies.Clear();
-                //options.KnownProxies.Add(Ip);
-            });
-            logger.Close();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,10 +26,15 @@ namespace API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            var forwardedHeadersOptions = new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.All
-            });
+            };
+
+            forwardedHeadersOptions.KnownProxies.Clear();
+            forwardedHeadersOptions.KnownNetworks.Clear();
+
+            app.UseForwardedHeaders(forwardedHeadersOptions);
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod());
 
