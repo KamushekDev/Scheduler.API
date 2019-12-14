@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{58D06F4A-B9F5-4873-A0AE-93616468EBC4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.Tests", "Parser.Tests\Parser.Tests.csproj", "{7FA7D6A4-E445-4956-B2EA-FC87AC1C2A7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{58D06F4A-B9F5-4873-A0AE-93616468EBC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58D06F4A-B9F5-4873-A0AE-93616468EBC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58D06F4A-B9F5-4873-A0AE-93616468EBC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FA7D6A4-E445-4956-B2EA-FC87AC1C2A7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FA7D6A4-E445-4956-B2EA-FC87AC1C2A7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FA7D6A4-E445-4956-B2EA-FC87AC1C2A7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FA7D6A4-E445-4956-B2EA-FC87AC1C2A7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

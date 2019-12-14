@@ -8,4 +8,8 @@
       <ProjectReference Include="..\src\Contracts\Contracts.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="ClosedXML" Version="0.95.0-beta2" />
+    </ItemGroup>
+
 </Project>
