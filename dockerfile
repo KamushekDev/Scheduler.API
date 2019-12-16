@@ -4,6 +4,9 @@ WORKDIR /app
 COPY src/API/API.csproj src/API/API.csproj
 COPY src/Contracts/*.csproj src/Contracts/
 COPY src/Data.Dapper/*.csproj src/Data.Dapper/
+COPY src/Parser/*.csproj src/Parser/
+COPY src/Domain/*.csproj src/Domain/
+COPY src/Parser.Tests/*.csproj src/Parser.Tests/
 COPY *.sln .
 # ENTRYPOINT tail -f /dev/null & wait
 RUN dotnet restore

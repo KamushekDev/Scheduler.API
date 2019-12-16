@@ -14,8 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Contracts\Contracts.csproj" />
       <ProjectReference Include="..\Parser\Parser.csproj" />
-      <ProjectReference Include="..\src\Contracts\Contracts.csproj" />
     </ItemGroup>
 
 </Project>
