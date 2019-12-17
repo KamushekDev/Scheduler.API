@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 as build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 as build
 WORKDIR /app
 
 COPY src/API/API.csproj src/API/API.csproj
@@ -15,7 +15,7 @@ RUN dotnet dev-certs https -ep /aspnetapp.pfx -p Timetable
 COPY . ./
 RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0 as final
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 as final
 
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password Timetable
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path aspnetapp.pfx
