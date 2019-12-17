@@ -25,7 +25,8 @@ namespace API
         {
             services.AddCors();
             services.AddControllers();
-            services.Configure<JWToken>(Configuration.GetSection("Jwt"));
+            var token = Configuration.GetSection("Jwt").Get<JWToken>();
+            services.AddSingleton(token);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -64,8 +65,6 @@ namespace API
             app.UseAuthentication();
 
             app.UseRouting();
-
-            app.UseAuthentication();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
