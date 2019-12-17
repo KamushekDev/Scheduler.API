@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 
@@ -20,6 +21,7 @@ namespace API.Controllers
 
         // GET: api/Test
         [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
             var variables = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>()
