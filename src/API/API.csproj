@@ -5,6 +5,7 @@
     <UserSecretsId>1f1cf0ac-3411-489f-9d51-7d6570850ed3</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	<NullableReferenceTypes>true</NullableReferenceTypes>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
