@@ -5,12 +5,13 @@ using Contracts.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 
 namespace API.Controllers
 {
     [Route("[Controller]")]
     [ApiController]
-    public class AuthenticationController : Controller
+    public class AuthenticationController : ControllerBase
     {
         private readonly JWToken _token;
         
@@ -21,9 +22,10 @@ namespace API.Controllers
         
         [AllowAnonymous] 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] string userName)
+        public IActionResult Login([FromBody] JObject request)
         {
             IActionResult response = Unauthorized();
+            var userName = request.ToString();
             // тут вместо этой хуйни нормальная проверка логина/пасса 
             if (userName != null)
             {

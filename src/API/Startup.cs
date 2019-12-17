@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
 
 namespace API
 {
@@ -19,14 +20,16 @@ namespace API
         {
             Configuration = configuration;
         }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddControllers();
-            var token = Configuration.GetSection("Jwt").Get<JWToken>();
-            services.AddSingleton(token);
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ContractResolver = new DefaultContractResolver
+                    {NamingStrategy = new SnakeCaseNamingStrategy()});
+            services.AddSingleton(Configuration.GetSection("Jwt").Get<JWToken>());
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
