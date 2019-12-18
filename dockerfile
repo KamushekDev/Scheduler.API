@@ -1,12 +1,20 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 as build
 WORKDIR /app
 
-COPY src/API/API.csproj src/API/API.csproj
+COPY src/API/*.csproj src/API/
 COPY src/Contracts/*.csproj src/Contracts/
 COPY src/Data.Dapper/*.csproj src/Data.Dapper/
 COPY src/Parser/*.csproj src/Parser/
 COPY src/Domain/*.csproj src/Domain/
 COPY src/Parser.Tests/*.csproj src/Parser.Tests/
+
+# RUN find . -name '*.csproj' | cpio -pdm .
+# RUN cp --parents -r -v $(find -name *.csproj) /app
+
+# RUN apt update
+# RUN apt install cpio
+# RUN find . -type f -name "*.csproj" | cpio -pdm  ./testik
+
 COPY *.sln .
 # ENTRYPOINT tail -f /dev/null & wait
 RUN dotnet restore
