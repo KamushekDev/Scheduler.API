@@ -22,10 +22,9 @@ namespace API.Controllers
         
         [AllowAnonymous] 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] JObject request)
+        public IActionResult Login([FromBody] string userName)
         {
             IActionResult response = Unauthorized();
-            var userName = request.ToString();
             // тут вместо этой хуйни нормальная проверка логина/пасса 
             if (userName != null)
             {

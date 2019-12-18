@@ -60,7 +60,7 @@ namespace API
 
             forwardedHeadersOptions.KnownProxies.Clear();
             forwardedHeadersOptions.KnownNetworks.Clear();
-
+    
             app.UseForwardedHeaders(forwardedHeadersOptions);
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod());
@@ -69,6 +69,8 @@ namespace API
 
             app.UseRouting();
 
+            app.UseAuthorization();
+                
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
