@@ -11,11 +11,11 @@ namespace API.Controllers
 {
     [Route("[Controller]")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthorizationController : ControllerBase
     {
         private readonly JWToken _token;
         
-        public AuthenticationController(JWToken token)
+        public AuthorizationController(JWToken token)
         {
             _token = token;
         }
@@ -24,14 +24,13 @@ namespace API.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] string userName)
         {
-            IActionResult response = Unauthorized();
             // тут вместо этой хуйни нормальная проверка логина/пасса 
-            if (userName != null)
+            if (userName == null)
             {
-                response = Ok(new {token = GenerateNewToken(userName)});
+                return Unauthorized();
             }
-
-            return response;
+            
+            return Ok(new {token = GenerateNewToken(userName)});
         }
 
         public string GenerateNewToken(string userName)

@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Serialization;
 
 namespace API
 {
@@ -26,9 +25,7 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ContractResolver = new DefaultContractResolver
-                    {NamingStrategy = new SnakeCaseNamingStrategy()});
+            services.AddControllers();
             services.AddSingleton(Configuration.GetSection("Jwt").Get<JWToken>());
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
