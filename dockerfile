@@ -7,6 +7,7 @@ COPY src/Data.Dapper/*.csproj src/Data.Dapper/
 COPY src/Parser/*.csproj src/Parser/
 COPY src/Domain/*.csproj src/Domain/
 COPY src/Parser.Tests/*.csproj src/Parser.Tests/
+COPY src/API.Tests/*.csproj src/API.Tests/
 
 # RUN find . -name '*.csproj' | cpio -pdm .
 # RUN cp --parents -r -v $(find -name *.csproj) /app

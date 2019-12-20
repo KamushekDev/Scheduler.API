@@ -30,7 +30,7 @@ namespace API.Controllers
             variables.Add(new
             {
                 name = (object) "user ip address",
-                value = (object) Request.HttpContext.Connection.RemoteIpAddress.ToString()
+                value = (object) Request.HttpContext.Connection.RemoteIpAddress?.ToString()
             });
 
             var headers = Request.Headers.Select(x => new {name = (object) x.Key, value = (object) x.Value.ToString()});
