@@ -1,5 +1,6 @@
 using System.Text;
 using Contracts.Models;
+using Data.Dapper.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -26,6 +27,7 @@ namespace API
         {
             services.AddCors();
             services.AddControllers();
+            services.AddSingleton<BaseDataAcсess>();
             services.AddSingleton(Configuration.GetSection("Jwt").Get<JWToken>());
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
