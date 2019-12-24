@@ -8,7 +8,8 @@ namespace Parser.Tests
 {
     public class UnitTest1
     {
-        [Fact]
+        [Fact(Skip="Лёха пока не сделал")]
+        //Когда сделаешь убери Skip
         public async Task TrialTest()
         {
             ITimetableParser parser = new LetiTimetableParser();
