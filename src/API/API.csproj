@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Data.Dapper\Data.Dapper.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Contracts.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -37,13 +39,24 @@ namespace API.Controllers
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_token.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var claims = GetIdentity(userName);
 
             var token = new JwtSecurityToken(_token.Issuer, _token.Audience, 
                 // тут можно навесить какие угодно claims о пользователе
-                null,
+                claims,
                 expires: DateTime.Now.AddMinutes(30), signingCredentials: credentials);
             
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private List<Claim> GetIdentity(string userName)
+        {
+            if (userName == "TestUser")
+            {
+                return new List<Claim>{new Claim("Roles", "JustForBuid")};
+            }
+
+            return null;
         }
     }
 }
