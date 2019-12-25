@@ -1,5 +1,8 @@
 using System.Text;
+using API.Interfaces;
+using API.Services;
 using Contracts.Models;
+using Data.Dapper.Interfaces;
 using Data.Dapper.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,6 +45,8 @@ namespace API
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                 };
             });
+            services.AddSingleton<ITimetableService, TimetableService>();
+            services.AddSingleton<ITimetableRepository, TimetableRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
