@@ -35,16 +35,38 @@ namespace Contracts.Parser
         
         string Room { get; }
         
+        //Day Day { get; }
+
         WeekType WeekType { get; }
         
         ITeacher Teacher { get; }
     }
 
+    public enum Time
+    {
+        t08_00,
+        t09_50,
+        t11_40,
+        t13_45,
+        t15_35,
+        t17_10
+    }
+
     public enum WeekType
     {
-        Even,
+        Both,
         Odd,
-        Both
+        Even
+    }
+
+    public enum Day
+    {
+        Monday,
+        Tuesday,
+        Wendsday,
+        Saturday,
+        Friday,
+        SomeDay
     }
     
     public interface ITeacher

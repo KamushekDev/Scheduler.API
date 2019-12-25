@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using ClosedXML.Excel;
 using Contracts.Parser;
 using System.Collections.Generic;
@@ -10,12 +11,13 @@ namespace Parser
 {
     public class LetiTimetableParser : ITimetableParser
     {
-        public Task<ITimetable> ParseTimetable(Stream pathToFile, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default)
+        public Task<ITimetable> ParseTimetable(/*Stream*/ string pathToFile, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default)
         {
-            using var workbook = new XLWorkbook(pathToFile);
-            var worksheet = workbook.Worksheet("Data");
+            //using var workbook = new XLWorkbook(pathToFile);
+            //var worksheet = workbook.Worksheet("Data");
 
-            Test(worksheet);
+            //Test(worksheet);
+            Parsing(pathToFile);
 
             //Ну а дальше развлекайся с Excel файлом
             //https://github.com/closedxml/closedxml
@@ -46,12 +48,23 @@ namespace Parser
             while (!currentRow.Cell(index).IsEmpty()) //ищем конец групп
                 index++;
             var groupRow = currentRow.Row(4, index - 1); //строка групп
-            //парсить 1-ю и 3-ю строки каждого времени (не, миша, ерунда)
             //считать 1-ю строку
-            do
+            currentRow = FindRaw(worksheet, "", index); //time to string
+            var cellsAddress = new int[4];
+            cellsAddress[0] = currentRow.FirstCellUsed().Address.RowNumber;
+            cellsAddress[1] = firstGroup;
+            cellsAddress[2] = groupRow.LastCellUsed().Address.ColumnNumber;
+            cellsAddress[3] = cellsAddress[1] + 3;
+
+            var currentRange = worksheet.Range(cellsAddress[0], cellsAddress[1], cellsAddress[2], cellsAddress[3]).RangeUsed();
             //идти по ней, проверяя на жирный текст
-            //"пр.", "пр", "" = практика (лишние отсечь), "лаб", "лаб." = лаба
             //при нахождении искать первую границу справа, потом снизу
+            for (int i = cellsAddress[1]; i <= cellsAddress[4]; i++)
+            {
+                //if (currentRange.Cell(0, i).Style.Font.Bold)
+
+            }
+            //"пр.", "пр", "" = практика (лишние отсечь), "лаб", "лаб." = лаба
             //ага, а про считать еще не подумал
             //если высота 4 - обе недели, 2 - нечетная
             //все это в range
@@ -96,6 +109,31 @@ namespace Parser
 
         }
 
+        //private IXLAddress FindYourWay(IXLWorksheet worksheet, IXLRange range, int index)
+        //{
+
+        //}
+
+        private void Parsing(string name)
+        {
+            Timetable data = new Timetable();
+            XmlDocument xDoc = new XmlDocument();
+            xDoc.Load(@"../../../../Parser/Timetable.xml");
+            XmlElement root = xDoc.DocumentElement;
+            XmlElement timetable = root[name];
+            foreach (XmlNode lists in timetable.ChildNodes)
+                foreach (XmlNode para in lists.ChildNodes)
+                {
+                    Lesson lesson = new Lesson(para.Attributes["time"].Value,
+                        para.Attributes["type"].Value, para.Attributes["group"].Value,
+                        para.Attributes["room"].Value, para.Attributes["week"].Value,
+                        para.Attributes["day"].Value, para.Attributes["teacher"].Value,
+                        para.Attributes["name"].Value);
+
+                    data.Lessons.Add(lesson);
+                }
+        }
+
         /// <summary>
         /// Искать строку с заданным значением
         /// </summary>
@@ -113,10 +151,75 @@ namespace Parser
             while (currentRow.Search(value, System.Globalization.CompareOptions.IgnoreCase, false) != null); //привести к адекватному виду
             return currentRow;
         }
-    }
 
-    class Timetable : ITimetable
-    {
+        class Timetable : ITimetable
+        {
+            public IList<ILesson> Lessons { get; }
 
+            public Timetable()
+            {
+                Lessons = new List<ILesson>();
+            }
+        }
+
+        class Lesson : ILesson
+        {
+            public ISubject Subject { get; }
+            public DateTime Time { get; }
+            public LessonType Type { get; }
+            public string Group { get; }
+            public string Room { get; }
+            public WeekType WeekType { get; }
+            //public Day Day { get; }
+            public ITeacher Teacher { get; }
+
+            public Lesson(string time, string type, string group, string room,
+                string weekType, string day, string teacher, string name)
+            {
+                string[] t = time.Split(':');
+                Time = new DateTime(2019, 1, int.Parse(day), int.Parse(t[0]), (t[1][0]!='0')?int.Parse(t[1]):0, 0);
+                switch (type)
+                {
+                    case "Laba": Type = LessonType.Laba; break;
+                    case "Practice": Type = LessonType.Practice; break;
+                    case "Lection": Type = LessonType.Lection; break;
+                    case "Shared": Type = LessonType.Shared; break;
+                }
+                Group = group;
+                Room = room;
+                switch (weekType)
+                {
+                    case "0": WeekType = WeekType.Both; break;
+                    case "1": WeekType = WeekType.Odd; break;
+                    case "2": WeekType = WeekType.Even; break;
+                }
+                Teacher = new Teacher(teacher);
+                Subject = new Subject(name);
+            }
+        }
+
+        class Subject : ISubject
+        {
+            public string Name { get; }
+
+            public Subject(string name)
+            {
+                Name = name;
+            }
+        }
+
+        public class Teacher : ITeacher
+        {
+            public string Name { get; }
+            public string Surname { get; }
+            public string Patronymic { get; }
+
+            public Teacher(string teacher)
+            {
+                Name = teacher;
+                Surname = "";
+                Patronymic = "";
+            }
+        }
     }
 }

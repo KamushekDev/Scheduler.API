@@ -8,13 +8,13 @@ namespace Parser.Tests
 {
     public class UnitTest1
     {
-        [Fact(Skip="Лёха пока не сделал")]
+        [Fact/*(Skip="Лёха пока не сделал")*/]
         //Когда сделаешь убери Skip
         public async Task TrialTest()
         {
             ITimetableParser parser = new LetiTimetableParser();
 
-            var file = File.OpenRead("pathToFile");
+            var file = "fkti-4-2";//File.OpenRead("pathToFile");
             
             var result = await parser.ParseTimetable(file); //ну прогресс и токен тут ещё с:
             
