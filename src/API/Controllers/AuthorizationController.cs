@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace API.Controllers
 {
-    [Route("[Controller]")]
+    [Route("api/[Controller]")]
     [ApiController]
     public class AuthorizationController : ControllerBase
     {
