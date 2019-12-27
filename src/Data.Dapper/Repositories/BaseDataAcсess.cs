@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Contracts.Helpers;
 using Dapper;
+using Npgsql;
 
 namespace Data.Dapper.Repositories
 {
@@ -27,7 +27,7 @@ namespace Data.Dapper.Repositories
         {
             using var cts = new CancellationTokenSource(_timeoutSeconds * 1000);
             var cd = new CommandDefinition(procedure, parameters, commandType: CommandType.StoredProcedure, cancellationToken: cts.Token, commandTimeout: _timeoutSeconds);
-            await using var connection = new SqlConnection(_connectionString);
+            await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync(cts.Token).ConfigureAwait(false);
             try
             {
@@ -43,13 +43,14 @@ namespace Data.Dapper.Repositories
         {
             using var cts = new CancellationTokenSource(_timeoutSeconds * 1000);
             var cd = new CommandDefinition(procedure, parameters, commandType: CommandType.StoredProcedure, cancellationToken: cts.Token, commandTimeout: _timeoutSeconds);
-            await using var connection = new SqlConnection(_connectionString);
+            
+            await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync(cts.Token).ConfigureAwait(false);
             try
             {
                 await connection.ExecuteAsync(cd).ConfigureAwait(false);
             }
-            catch (SqlException ex)
+            catch (NpgsqlException ex)
             {
                 throw new Exception($"Exception in {procedure}", ex);
             }
