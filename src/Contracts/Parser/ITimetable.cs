@@ -49,7 +49,7 @@ namespace Contracts.Parser
         t11_40,
         t13_45,
         t15_35,
-        t17_10,
+        t17_25,
         t19_05,
         t20_45
     }

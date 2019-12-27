@@ -12,12 +12,12 @@ namespace Parser
 {
     public class LetiTimetableParser : ITimetableParser
     {
-        public Task<ITimetable> ParseTimetable(Stream pathToFile, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default)
+        public async Task<ITimetable> ParseTimetable(Stream pathToFile, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default)
         {
             using var workbook = new XLWorkbook(pathToFile);
-            var worksheet = workbook.Worksheet("ФКТИ 4_2"); //Сделать для каждого листа
+            //var worksheet = workbook.Worksheet("ФКТИ 4_2"); //Сделать для каждого листа
 
-            ITimetable timetable = Parsing(worksheet); //я не понял как верунть значение, вначале допилю весь парсер
+            ITimetable timetable = Pars();// Parsing(worksheet);
 
             //Ну а дальше развлекайся с Excel файлом
             //https://github.com/closedxml/closedxml
@@ -26,7 +26,7 @@ namespace Parser
             //Чтобы понять что за прогресс и отмена можешь глянуть сюда:
             //https://devblogs.microsoft.com/dotnet/async-in-4-5-enabling-progress-and-cancellation-in-async-apis/
 
-            throw new NotImplementedException();
+            return timetable;
         }
 
         private ITimetable Parsing(IXLWorksheet worksheet)
@@ -196,6 +196,26 @@ namespace Parser
                     return currentRow;
                 startIndex++;
             }
+        }
+
+        private Timetable Pars()
+        {
+            Timetable data = new Timetable();
+            XmlDocument xDoc = new XmlDocument();
+            xDoc.Load(@"../../../../Parser/G6374.xml");
+            XmlElement root = xDoc.DocumentElement;
+            XmlElement timetable = root["g6374"];
+            foreach (XmlNode para in timetable.ChildNodes)
+            {
+                Lesson lesson = new Lesson(para.Attributes["time"].Value,
+                    para.Attributes["type"].Value, para.Attributes["group"].Value,
+                    para.Attributes["room"].Value, para.Attributes["week"].Value,
+                    (DayOfWeek)int.Parse(para.Attributes["day"].Value), para.Attributes["teacher"].Value,
+                    para.Attributes["name"].Value);
+
+                data.Lessons.Add(lesson);
+            }
+            return data;
         }
 
         class Timetable : ITimetable
