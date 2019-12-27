@@ -6,7 +6,7 @@ namespace Contracts.Parser
 {
     public interface ITimetable
     {
-        
+
         //Тут делай как тебе будет удобно, потому что преобразовывать это всё равно придётся в наш формат
         //Единственное требование к этому в том, чтобы я мог легко и быстро достать все названия предметов и поменять предмет внутри расписания
 
@@ -19,7 +19,7 @@ namespace Contracts.Parser
     {
         string Name { get; }
     }
-    
+
     public interface ILesson
     {
         ISubject Subject { get; }
@@ -32,13 +32,13 @@ namespace Contracts.Parser
         LessonType Type { get; }
 
         string Group { get; }
-        
+
         string Room { get; }
-        
+
         //Day Day { get; }
 
         WeekType WeekType { get; }
-        
+
         ITeacher Teacher { get; }
     }
 
@@ -49,7 +49,9 @@ namespace Contracts.Parser
         t11_40,
         t13_45,
         t15_35,
-        t17_10
+        t17_10,
+        t19_05,
+        t20_45
     }
 
     public enum WeekType
@@ -59,16 +61,6 @@ namespace Contracts.Parser
         Even
     }
 
-    public enum Day
-    {
-        Monday,
-        Tuesday,
-        Wendsday,
-        Saturday,
-        Friday,
-        SomeDay
-    }
-    
     public interface ITeacher
     {
         //Иванов П. К. => Name="П" Surname="Иванов" Patronymic="К"
@@ -83,7 +75,8 @@ namespace Contracts.Parser
         Practice,
         Lection,
         Laba,
-        Shared
+        Shared,
+        Unknown
         //Ну и чо там ещё есть
         //напиши тут лучше нормально, я от балды ебанул
     }

@@ -14,7 +14,7 @@ namespace Parser.Tests
         {
             ITimetableParser parser = new LetiTimetableParser();
 
-            var file = "fkti-4-2";//File.OpenRead("pathToFile");
+            var file = File.OpenRead(@"../../../../Parser/fkti-4-2.xlsx");
             
             var result = await parser.ParseTimetable(file); //ну прогресс и токен тут ещё с:
             

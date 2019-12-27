@@ -7,6 +7,6 @@ namespace Contracts.Parser
 {
     public interface ITimetableParser
     {
-        public Task<ITimetable> ParseTimetable(/*Stream*/string file, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default);
+        public Task<ITimetable> ParseTimetable(Stream file, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default);
     }
 }
