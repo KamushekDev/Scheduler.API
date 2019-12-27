@@ -17,8 +17,10 @@ namespace Parser
             using var workbook = new XLWorkbook(pathToFile);
             var worksheet = workbook.Worksheet("ФКТИ 4_2"); //Сделать для каждого листа
 
-            ITimetable timetable = Parsing(worksheet); //я не понял как верунть значение, вначале допилю весь парсер
+            var timetable = Parsing(worksheet); //я не понял как верунть значение, вначале допилю весь парсер
 
+            return Task.FromResult(timetable);
+            
             //Ну а дальше развлекайся с Excel файлом
             //https://github.com/closedxml/closedxml
             //будет полезно тут глянуть на вкладочку Wiki
