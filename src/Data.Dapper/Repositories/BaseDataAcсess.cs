@@ -31,7 +31,8 @@ namespace Data.Dapper.Repositories
             await connection.OpenAsync(cts.Token).ConfigureAwait(false);
             try
             {
-                return await connection.QueryAsync<T>(cd).ConfigureAwait(false);
+                var result = await connection.QueryAsync<T>(cd).ConfigureAwait(false);
+                return result;
             }
             catch (Exception ex)
             {
@@ -63,5 +64,7 @@ namespace Data.Dapper.Repositories
                 .ConfigureAwait(false);
             return result.FirstOrDefault();
         }
+        
+        
     }
 }

@@ -8,7 +8,11 @@ namespace Contracts.Models
     public class Class
     {
         [JsonProperty]
-        public DateTime Time { get; set; }
+        public TimeSpan StartTime { get; set; }
+        [JsonProperty]
+        public TimeSpan EndTime { get; set; }
+        [JsonProperty]
+        public int DayNumber { get; set; }
         [JsonProperty]
         public ClassTypes Types { get; set; }
         [JsonProperty]

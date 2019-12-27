@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Authorize]
     public class TimetableController: Controller
     {
         private readonly ITimetableService _timetableService;
