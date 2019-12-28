@@ -6,6 +6,6 @@ namespace API.Interfaces
 {
     public interface ITimetableService
     {
-        Task<List<Class>> GetTimetableByGroupId(int groupId);
+        Task<List<Class>> GetTimetableByGroups(IEnumerable<string> groups);
     }
 }

@@ -6,6 +6,6 @@ namespace Data.Dapper.Interfaces
 {
     public interface ITimetableRepository
     {
-        Task<IEnumerable<Class>> GetTimetableByGroupId(int groupId);
+        Task<IEnumerable<Class>> GetTimetableByGroups(IEnumerable<string> groups);
     }
 }

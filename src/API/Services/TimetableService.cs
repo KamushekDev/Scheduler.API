@@ -16,14 +16,14 @@ namespace API.Services
             _timetableRepository = timetableRepository;
         }
         
-        public async Task<List<Class>> GetTimetableByGroupId(int groupId)
+        public async Task<List<Class>> GetTimetableByGroups(IEnumerable<string> groups)
         {
-            if (groupId == 0)
+            if (groups is null)
             {
                 return new List<Class>();
             }
 
-            var result = await _timetableRepository.GetTimetableByGroupId(groupId);
+            var result = await _timetableRepository.GetTimetableByGroups(groups);
             return result.ToList();
         }
     }

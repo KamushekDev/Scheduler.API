@@ -20,16 +20,17 @@ namespace API.Controllers
         public async Task<IActionResult> GetTimetable()
         {
             // тут типо получаем из учетки
-            int groupId;
+            var groups = new List<string>();
             if (false)
             {
                 return Unauthorized();
             }
             else
             {
-                groupId = 6374;
+                groups.Add("6374");
+                groups.Add("6371");
             }
-            var result = await _timetableService.GetTimetableByGroupId(groupId);
+            var result = await _timetableService.GetTimetableByGroups(groups);
             return Json(result);
         }
     }
