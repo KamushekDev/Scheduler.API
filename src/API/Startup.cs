@@ -34,18 +34,23 @@ namespace API
             services.AddScoped<LetiTimetableParser>();
             
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["Jwt:Issuer"],
-                    ValidAudience = Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                };
-            });
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                })
+                .AddVkontakte(options =>
+                {
+                    options.ClientId = "7262979";
+                    options.ClientSecret = "pJhRdVYwGBmXyuLG6VlF";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,17 +68,17 @@ namespace API
 
             forwardedHeadersOptions.KnownProxies.Clear();
             forwardedHeadersOptions.KnownNetworks.Clear();
-    
+
             app.UseForwardedHeaders(forwardedHeadersOptions);
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod());
 
+            app.UseRouting();
+            
             app.UseAuthentication();
 
-            app.UseRouting();
-
             app.UseAuthorization();
-                
+
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }

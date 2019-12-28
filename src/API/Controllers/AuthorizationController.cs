@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Contracts.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -32,7 +33,8 @@ namespace API.Controllers
                 return Unauthorized();
             }
             
-            return Ok(new {token = GenerateNewToken(userName)});
+            //return Ok(new {token = GenerateNewToken(userName)});
+            return Challenge(new AuthenticationProperties(), "Vkontakte");
         }
 
         public string GenerateNewToken(string userName)
