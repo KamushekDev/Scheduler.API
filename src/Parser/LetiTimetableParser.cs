@@ -12,12 +12,13 @@ namespace Parser
 {
     public class LetiTimetableParser : ITimetableParser
     {
-        public Task<ITimetable> ParseTimetable(Stream pathToFile, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default)
+        public Task<List<ITimetable>> ParseTimetable(Stream pathToFile, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default)
         {
             using var workbook = new XLWorkbook(pathToFile);
-            var worksheet = workbook.Worksheet("ФКТИ 4_2"); //Сделать для каждого листа
-
-            var timetable = Parsing(worksheet);
+            var worksheets = workbook.Worksheets;
+            var timetable = new List<ITimetable>();
+            foreach (IXLWorksheet ws in worksheets)
+                timetable.Add(Parsing(ws));
 
             return Task.FromResult(timetable);
 
