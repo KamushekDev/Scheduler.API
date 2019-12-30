@@ -46,7 +46,7 @@ namespace Parser
             var pastDaysBuffer = 0; //сдвиг строк относительно предыдущих дней
 
             //берем range n-го интервала времени для всех групп
-            const int groupInterval = 3; //кол-во строк для номера группы
+            var groupInterval = GetGroupInterval(worksheet, groupRow.RowNumber()); //кол-во строк для номера группы
 
             for (var dayIndex = 0; dayIndex < 6; dayIndex++) //+совместные пары для групп
             {
@@ -88,25 +88,6 @@ namespace Parser
                 }
                 pastDaysBuffer += lessonsCount * 4 + 1;
             }
-            //"пр.", "пр", "" = практика (лишние отсечь), "лаб", "лаб." = лаба
-            //если высота 4 - обе недели, 2 - нечетная
-            //все это в range
-            //лекция ли? проверяем по бэкграунду
-            //если предущие выкладки верны, то в range чекаем ячейки
-            //каждую непустую ячейку разбиваем по пробелам
-            //... уже 3 стиля заполнения препода насчитал
-            //"пр <фамилия>", "<фамилия>", "<фамилия> <И>. <О>."
-            //"пр" отсекаем, одну букву + ""/"." отсекаем (пока что)
-            //хмм... а могут ли они И.О. перед фамилией сунуть? в нашем нету, но зная лэти
-            //последнее слово - аудитория (миша, все фигня)
-            //у лекций дважды аудитория написана...
-            //тогда нет цифр - преподом будешь, исключение "уит"
-            //до меня только щас доперло, "пр" у преподов это метка практика, котороя промазала
-            //хммм.... если ты будешь отсекать И.О. преподов, то... ну как бы же однофамильцы есть
-            //окей, вместо выбрасывания запихиваем, остальным нули
-            //снова почекал, только у савосина стоит "пр" и только на практиках
-            //думаю имеет смысл и "пр.", "лаб", "лаб." тоже отсекать
-            //а еще где то аудитории через слэш (не знаю, как это разносить, поэтому так суем)
 
             return timetable;
         }
@@ -163,7 +144,7 @@ namespace Parser
             {
                 if (info == "")
                     continue;
-                if ((info.ToLower().Contains("уит")) || (new Regex("[0-9]+").IsMatch(info)))
+                if ((info.ToLower().Contains("уит")) || (new Regex("[0-9]+").IsMatch(info))) //Доразобраться с регулярками
                     room = info;
                 else
                 {
@@ -198,13 +179,15 @@ namespace Parser
             var lessonSecondaryBorderStyle = XLBorderStyleValues.Thin;
 
             while ((range.Cell(row, column).Style.Border.RightBorder != lessonPrimaryBorderStyle) &&
-            (range.Cell(row, column + 1).Style.Border.RightBorder != lessonPrimaryBorderStyle))
+            (range.Cell(row, column + 1).Style.Border.RightBorder != lessonPrimaryBorderStyle) &&
+            (column < range.ColumnCount()))
                 column++;
 
             while ((range.Cell(row, column).Style.Border.BottomBorder != lessonPrimaryBorderStyle) &&
             (range.Cell(row, column).Style.Border.BottomBorder != lessonSecondaryBorderStyle) &&
             (range.Cell(row + 1, column).Style.Border.TopBorder != lessonPrimaryBorderStyle) &&
-            (range.Cell(row + 1, column).Style.Border.TopBorder != lessonSecondaryBorderStyle))
+            (range.Cell(row + 1, column).Style.Border.TopBorder != lessonSecondaryBorderStyle) &&
+            (row < range.RowCount()))
                 row++;
 
             return worksheet.Range(startCell, range.Cell(row, column).Address); //возвращает на 1 столбец меньше военки
@@ -227,6 +210,15 @@ namespace Parser
                     return currentRow;
                 startIndex++;
             }
+        }
+
+        private int GetGroupInterval(IXLWorksheet ws, int groupRowNumber)
+        {
+            var i = groupRowNumber + 1;
+            while (ws.Cell(i, ws.FirstColumnUsed().ColumnNumber()).Value.ToString().ToLower() != "понедельник")
+                i++;
+
+            return i - groupRowNumber;
         }
 
         private ITimetable Pars()
