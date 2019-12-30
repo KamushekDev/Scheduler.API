@@ -15,20 +15,18 @@ namespace Parser
         public Task<ITimetable> ParseTimetable(Stream pathToFile, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default)
         {
             using var workbook = new XLWorkbook(pathToFile);
-            //var worksheet = workbook.Worksheet("ФКТИ 4_2"); //Сделать для каждого листа
+            var worksheet = workbook.Worksheet("ФКТИ 4_2"); //Сделать для каждого листа
 
-            var timetable = Parsing(worksheet); //я не понял как верунть значение, вначале допилю весь парсер
+            var timetable = Parsing(worksheet);
 
             return Task.FromResult(timetable);
-            
+
             //Ну а дальше развлекайся с Excel файлом
             //https://github.com/closedxml/closedxml
             //будет полезно тут глянуть на вкладочку Wiki
 
             //Чтобы понять что за прогресс и отмена можешь глянуть сюда:
             //https://devblogs.microsoft.com/dotnet/async-in-4-5-enabling-progress-and-cancellation-in-async-apis/
-
-            return timetable;
         }
 
         private ITimetable Parsing(IXLWorksheet worksheet)
@@ -67,19 +65,22 @@ namespace Parser
                     //при нахождении искать первую границу справа, потом снизу
                     for (var i = 1; i <= lastGroup - firstGroup + 1; i++)
                     {
-                        var currentCell = currentRange.Cell(1, i);
-                        if (currentCell.IsMerged() && (currentCell.MergedRange().FirstCell() != currentCell))
-                            continue;
-                        if (currentCell.Style.Font.Bold && (currentCell.Value.ToString() != ""))
-                            timetable.Lessons.Add(GetLessonData(worksheet, groupRow, currentRange, i, dayIndex, timeIndex));
-                        if (currentCell.IsMerged())
+                        for (var k = 1; k < 4; k += 2)
                         {
-                            var mergedRange = currentCell.MergedRange();
-                            for (var j = 1; j <= mergedRange.ColumnCount(); j++)
+                            var currentCell = currentRange.Cell(k, i);
+                            if (currentCell.IsMerged() && (currentCell.MergedRange().FirstCell() != currentCell))
+                                continue;
+                            if (currentCell.Style.Font.Bold && (currentCell.Value.ToString() != ""))
+                                timetable.Lessons.Add(GetLessonData(worksheet, groupRow, currentRange, i, dayIndex, timeIndex, k));
+                            if (currentCell.IsMerged())
                             {
-                                string group = worksheet.Cell(groupRow.FirstCell().Address.RowNumber, mergedRange.Cell(1, j).Address.ColumnNumber).Value.ToString();
-                                Lesson l = timetable.Lessons[timetable.Lessons.Count - 1] as Lesson; //я бегло не могу сообразить, что здесь может пойти не так, а глубже я уже не в состояни вникать
-                                timetable.Lessons.Add(new Lesson(l.Time, l.Type, group, l.Room, l.WeekType, l.Day, l.Teacher, l.Subject)); //работает - не трожь
+                                var mergedRange = currentCell.MergedRange();
+                                for (var j = 1; j <= mergedRange.ColumnCount(); j++)
+                                {
+                                    string group = worksheet.Cell(groupRow.FirstCell().Address.RowNumber, mergedRange.Cell(1, j).Address.ColumnNumber).Value.ToString();
+                                    Lesson l = timetable.Lessons[timetable.Lessons.Count - 1] as Lesson; //я бегло не могу сообразить, что здесь может пойти не так, а глубже я уже не в состояни вникать
+                                    timetable.Lessons.Add(new Lesson(l.Time, l.Type, group, l.Room, l.WeekType, l.Day, l.Teacher, l.Subject)); //работает - не трожь
+                                }
                             }
                         }
                     }
@@ -109,11 +110,11 @@ namespace Parser
             return timetable;
         }
 
-        private Lesson GetLessonData(IXLWorksheet worksheet, IXLRangeRow groupRow, IXLRange currentRange, int currentColumn, int day, int time)
+        private Lesson GetLessonData(IXLWorksheet worksheet, IXLRangeRow groupRow, IXLRange currentRange, int currentColumn, int day, int time, int checkedWeek)
         {
-            var lessonRange = SearchForLessonRange(worksheet, currentRange, 1, currentColumn);
+            var lessonRange = SearchForLessonRange(worksheet, currentRange, checkedWeek, currentColumn);
             var name = lessonRange.Cell(1, 1).Value.ToString();
-            var type = "";
+            string type;
 
             bool isLecture;
             try
@@ -129,7 +130,7 @@ namespace Parser
                 type = "Lecture";
             else
             {
-                Regex regex = new Regex(@"\w* лаб.*", RegexOptions.IgnoreCase);
+                Regex regex = new Regex(@"лаб[.]*", RegexOptions.IgnoreCase);
                 if (regex.IsMatch(name))
                 {
                     name = regex.Replace(name, "");
@@ -137,18 +138,45 @@ namespace Parser
                 }
                 else
                 {
-                    regex = new Regex(@"\w* пр.*", RegexOptions.IgnoreCase);
+                    regex = new Regex(@"пр[.]*", RegexOptions.IgnoreCase);
                     name = regex.Replace(name, "");
                     type = "Practice";
                 }
             }
             name = name.Trim();
 
-            var weekType = (lessonRange.RowCount() == 4) ? "Both" : "Odd"; //надо унифицировать для четных недель все
+            var weekType = (lessonRange.RowCount() == 4) ? "Both" : (checkedWeek == 1) ? "Odd" : "Even"; //надо унифицировать для четных недель все
 
             var group = worksheet.Cell(groupRow.FirstCell().Address.RowNumber, currentRange.Cell(1, currentColumn).Address.ColumnNumber).Value.ToString();
+
+            var lessonInfo = "";
+            for (var i = 2; i <= lessonRange.RowCount(); i++)
+                for (var j = 1; j <= lessonRange.ColumnCount(); j++)
+                    if (!lessonRange.Cell(i, j).IsEmpty())
+                        lessonInfo += lessonRange.Cell(i, j).Value.ToString() + " ";
+            var rangeOfLessonInfo = lessonInfo.Split(' ');
             var room = "";
             var teacher = "";
+            var teacherIO = "";
+            foreach (string info in rangeOfLessonInfo)
+            {
+                if (info == "")
+                    continue;
+                if ((info.ToLower().Contains("уит")) || (new Regex("[0-9]+").IsMatch(info)))
+                    room = info;
+                else
+                {
+                    if ((info.Contains('.')) && (info != "пр.") && (info != "лаб."))
+                    {
+                        var ioRange = info.Split('.');
+                        foreach (string io in ioRange)
+                            if (io != "")
+                                teacherIO += io + " ";
+                        continue;
+                    }
+                    teacher = info;
+                }
+            }
 
             return new Lesson(((Time)time).ToString(), type, group, room, weekType, (DayOfWeek)(day + 1), teacher, name);
         }
@@ -200,9 +228,9 @@ namespace Parser
             }
         }
 
-        private Timetable Pars()
+        private ITimetable Pars()
         {
-            Timetable data = new Timetable();
+            ITimetable data = new Timetable();
             XmlDocument xDoc = new XmlDocument();
             xDoc.Load(@"../../../../Parser/G6374.xml");
             XmlElement root = xDoc.DocumentElement;
@@ -278,6 +306,14 @@ namespace Parser
                 Teacher = teacher;
                 Subject = name;
             }
+
+            public override string ToString()
+            {
+                var result = Day.ToString() + " " + Time.Hour.ToString() + ":" + Time.Minute.ToString() + " " + Group.ToString() + " " + Subject.ToString() + " " + Type.ToString() +
+                    " " + WeekType.ToString() + " " + Room.ToString() + " " + Teacher.ToString();
+
+                return result;
+            }
         }
 
         class Subject : ISubject
@@ -288,9 +324,14 @@ namespace Parser
             {
                 Name = name;
             }
+
+            public override string ToString()
+            {
+                return Name;
+            }
         }
 
-        public class Teacher : ITeacher
+        class Teacher : ITeacher
         {
             public string Name { get; }
             public string Surname { get; }
@@ -301,6 +342,11 @@ namespace Parser
                 Name = teacher;
                 Surname = "";
                 Patronymic = "";
+            }
+
+            public override string ToString()
+            {
+                return Name;
             }
         }
     }
