@@ -46,10 +46,17 @@ namespace API
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                     };
                 })
+                .AddGitHub(options =>
+                {
+                    options.CallbackPath = "/api/auth/callback/github";
+                    options.ClientId = "db8e69ebd64c032861ae";
+                    options.ClientSecret = "9c22d661b8cd28c1dd776cebe322e67155935102";
+                })
                 .AddVkontakte(options =>
                 {
-                    options.ClientId = "7262979";
-                    options.ClientSecret = "pJhRdVYwGBmXyuLG6VlF";
+                    options.CallbackPath = "/api/auth/callback/vk";
+                    options.ClientId = "7263896";
+                    options.ClientSecret = "CgRa3MRXf5CF2ttWutPl";
                 });
         }
 
@@ -74,7 +81,7 @@ namespace API
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod());
 
             app.UseRouting();
-            
+
             app.UseAuthentication();
 
             app.UseAuthorization();
