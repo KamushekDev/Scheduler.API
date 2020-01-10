@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Parser;
 
 namespace API
 {
@@ -29,6 +30,9 @@ namespace API
             services.AddControllers();
             services.AddSingleton<BaseDataAcсess>();
             services.AddSingleton(Configuration.GetSection("Jwt").Get<JWToken>());
+
+            services.AddScoped<LetiTimetableParser>();
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
