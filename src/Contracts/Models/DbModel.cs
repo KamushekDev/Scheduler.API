@@ -1,29 +1,36 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace Contracts.Models
 {
-    [JsonObject]
     public class DbModel
     {
-        public TimeSpan StartTime { get; set; }
-        
-        public TimeSpan EndTime { get; set; }
-        
-        public int ClassDayNumber { get; set; }
-        
-        public string LessonName { get; set; }
-        
-        public string Room { get; set; }
-        
-        public string TeacherName { get; set; }
-        
-        public string TeacherSurname { get; set; }
-        
-        public string TeacherPatronymic { get; set; }
-        
-        public string ClassType { get; set; }
-        
-        public string GroupName { get; set; }
-    }
+        public int taskclassid { get; set; }
+        public DateTime taskstarttime { get; set; }
+        public DateTime taskendtime { get; set; }
+        public string taskname { get; set; }
+        public string taskdescription { get; set; }
+        public string taskaccess { get; set; }
+        public string lessonname { get; set; }
+        public string roomname { get; set; }
+        public int groupid { get; set; }
+        public DateTime classtime { get; set; }
+        public string classaccess { get; set; }
+        public string classtypename { get; set; }
+        public int classtermdatesid { get; set; }
+        public int classteacherid { get; set; }
+        public string classtypeaccess { get; set; }
+        public string roomdescription { get; set; }
+        public DateTime termstartdate { get; set; }
+        public DateTime termenddate { get; set; }
+        public string lessonaccess { get; set; }
+        public string groupname { get; set; }
+        public string groupaccess { get; set; }
+        public string groupinvitetag { get; set; }
+        public string groupdescription { get; set; }
+        public string teachername { get; set; }
+        public string teachersurname { get; set; }
+        public string teacherpatronymic { get; set; }
+        public string teacherphone { get; set; }
+        public string teacherrmail { get; set; }
+    }   
 }

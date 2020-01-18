@@ -22,6 +22,22 @@ namespace Data.Dapper.Repositories
             _timeoutSeconds = DatabaseConfiguration.TimeoutSeconds;
         }
         
+        public async Task<IEnumerable<T>> ExecuteQueryWhichReturnsCollectionAsync<T>(string query,
+            DynamicParameters parameters = null)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync().ConfigureAwait(false);
+            try
+            {
+                var result = await connection.QueryAsync<T>(query, parameters).ConfigureAwait(false);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception in query", ex);
+            }
+        }
+        
         public async Task<IEnumerable<T>> ExecuteStoredProcedureWhichReturnsCollectionAsync<T>(string procedure,
             DynamicParameters parameters = null)
         {
