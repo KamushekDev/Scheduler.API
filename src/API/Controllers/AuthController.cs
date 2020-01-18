@@ -5,11 +5,11 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
-using Contracts.Models;
+using API.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers
@@ -18,30 +18,13 @@ namespace API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly JWToken _token;
+        private readonly AuthSettings _authSettings;
+        private readonly HttpClient _client = new HttpClient();
 
-        public AuthController(JWToken token)
+        public AuthController(AuthSettings authSettings)
         {
-            _token = token;
+            _authSettings = authSettings;
         }
-
-        // [HttpPost("login")]
-        // public IActionResult Login([FromBody] string userName)
-        // {
-        //     // тут вместо этой хуйни нормальная проверка логина/пасса 
-        //     if (userName == null)
-        //     {
-        //         return Unauthorized();
-        //     }
-        //
-        //     return Ok(new {token = GenerateNewToken(userName)});
-        // }
-
-        // [HttpGet("github")]
-        // public IActionResult LoginWithGutHub()
-        // {
-        //     return Challenge(new AuthenticationProperties() {AllowRefresh = true}, "GitHub");
-        // }
 
         [HttpGet("vk")]
         public IActionResult LoginWithVkontakte()
@@ -52,66 +35,31 @@ namespace API.Controllers
         [HttpGet("callback/vk")]
         public async Task<IActionResult> VkontakteCallback([FromQuery] string code, [FromQuery] string state)
         {
-            var client = new HttpClient();
-
-            var clientSecret = "CgRa3MRXf5CF2ttWutPl";
-
-            var redirectUri = "http://31.134.151.83/api/auth/callback/vk";
-
-            var clientId = 7263896;
-
-            var response =
-                await client.GetAsync(
-                    $"https://oauth.vk.com/access_token?client_id={clientId}&client_secret={clientSecret}&redirect_uri={redirectUri}&code={code}");
-
-            var res = await response.Content.ReadAsStringAsync();
-
-            var result = JsonSerializer.Deserialize<VKResponse>(res);
-
-            //Save result or smth
-
-            return Redirect($"/auth/{GenerateNewToken("vk", result.user_id.ToString())}");
-        }
-
-        public class VKResponse
-        {
-            public string access_token { get; set; }
-            public int expires_in { get; set; }
-            public int user_id { get; set; }
-        }
-
-        [HttpGet("callback/github")]
-        // public IActionResult GitHubCallback([FromQuery] string client_id, [FromQuery] string scope, [FromQuery] string response_type, [FromQuery] string redirect_uri, [FromQuery] string state)
-        public async Task<IActionResult> GitHubCallback([FromQuery] string code, [FromQuery] string state)
-        {
-            // Console.WriteLine($"CODE: {access_token}");
-            // return Ok($"code: {access_token}");
-
-            var client = new HttpClient();
-            try
+            var queryParams = new Dictionary<string, string>
             {
-                var response = await client.GetAsync($"https://api.github.com/user?access_token={code}",
-                    new CancellationTokenSource(1000).Token);
+                {"client_id", _authSettings.VkSettings.ClientId.ToString()},
+                {"client_secret", _authSettings.VkSettings.ClientSecret},
+                {"redirect_uri", _authSettings.VkSettings.RedirectUri},
+                {"code", code}
+            };
+            var query = QueryHelpers.AddQueryString("https://oauth.vk.com/access_token", queryParams);
 
+            var response = await _client.GetStringAsync(query);
 
-                return Redirect("/");
-                return Redirect("/auth/callback?name");
-            }
-            catch (TaskCanceledException e)
-            {
-                Console.WriteLine(e);
-            }
+            var result = JsonSerializer.Deserialize<VkAccessTokenResponse>(response);
 
-            return Redirect("/error");
+            //todo: Save result or smth
+
+            return Redirect($"/auth/{GenerateNewToken("vk", result.UserId.ToString())}");
         }
 
         private string GenerateNewToken(string provider, string userId)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_token.Key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authSettings.TokenSettings.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = GetIdentity(provider, userId);
 
-            var token = new JwtSecurityToken(_token.Issuer, _token.Audience,
+            var token = new JwtSecurityToken(_authSettings.TokenSettings.Issuer, _authSettings.TokenSettings.Audience,
                 // тут можно навесить какие угодно claims о пользователе
                 claims,
                 expires: DateTime.Now.AddMinutes(30),

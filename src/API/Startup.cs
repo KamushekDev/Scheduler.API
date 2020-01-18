@@ -1,5 +1,5 @@
 using System.Text;
-using Contracts.Models;
+using API.Models;
 using Data.Dapper.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,12 +26,15 @@ namespace API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            var authSettings = Configuration.GetSection("AuthSettings").Get<AuthSettings>();
+            
             services.AddCors();
             services.AddControllers();
+            
             services.AddSingleton<BaseDataAcсess>();
-            services.AddSingleton(Configuration.GetSection("Jwt").Get<JWToken>());
-
+            services.AddSingleton(authSettings);
             services.AddScoped<LetiTimetableParser>();
+            
             
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
                 {
@@ -41,22 +44,16 @@ namespace API
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = Configuration["Jwt:Issuer"],
-                        ValidAudience = Configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                        ValidIssuer = authSettings.TokenSettings.Issuer,
+                        ValidAudience = authSettings.TokenSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings.TokenSettings.Key))
                     };
-                })
-                .AddGitHub(options =>
-                {
-                    options.CallbackPath = "/api/auth/callback/github";
-                    options.ClientId = "db8e69ebd64c032861ae";
-                    options.ClientSecret = "9c22d661b8cd28c1dd776cebe322e67155935102";
                 })
                 .AddVkontakte(options =>
                 {
                     options.CallbackPath = "/api/auth/callback/vk";
-                    options.ClientId = "7263896";
-                    options.ClientSecret = "CgRa3MRXf5CF2ttWutPl";
+                    options.ClientId = authSettings.VkSettings.ClientId.ToString();
+                    options.ClientSecret = authSettings.VkSettings.ClientSecret;
                 });
         }
 
