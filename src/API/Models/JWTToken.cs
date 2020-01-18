@@ -1,11 +1,9 @@
-﻿namespace Contracts.Models
+﻿namespace API.Models
 {
-    public class JWToken
+    public class JWTToken
     {
         public string Key { get; set; }
-
         public string Issuer { get; set; }
-        
         public string Audience { get; set; }
     }
 }

@@ -8,8 +8,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace API.Controllers
 {
-    [Route("api/[Controller]")]
+    [Authorize]
     [ApiController]
+    [Route("[Controller]")]
     public class TestController : ControllerBase
     {
         private IHostEnvironment _environment;
@@ -21,7 +22,6 @@ namespace API.Controllers
 
         // GET: api/Test
         [HttpGet]
-        [Authorize]
         public IActionResult Get()
         {
             var variables = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>()
@@ -43,7 +43,7 @@ namespace API.Controllers
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {
-            return "value";
+            return "Text from controller protected with [Autorize]";
         }
 
         // POST: api/Test
