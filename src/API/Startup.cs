@@ -35,7 +35,6 @@ namespace API
             services.AddSingleton(authSettings);
             services.AddScoped<LetiTimetableParser>();
             
-            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -76,11 +75,9 @@ namespace API
             app.UseForwardedHeaders(forwardedHeadersOptions);
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod());
-
             app.UseRouting();
 
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

@@ -14,12 +14,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers
 {
-    [Route("[Controller]")]
     [ApiController]
+    [Route("[Controller]")]
     public class AuthController : ControllerBase
     {
         private readonly AuthSettings _authSettings;
-        private readonly HttpClient _client = new HttpClient();
 
         public AuthController(AuthSettings authSettings)
         {
@@ -44,11 +43,11 @@ namespace API.Controllers
             };
             var query = QueryHelpers.AddQueryString("https://oauth.vk.com/access_token", queryParams);
 
-            var response = await _client.GetStringAsync(query);
-
+            var client = new HttpClient();
+            var response = await client.GetStringAsync(query);
             var result = JsonSerializer.Deserialize<VkAccessTokenResponse>(response);
 
-            //todo: Save result or smth
+            //todo: Save results to db
 
             return Redirect($"/auth/{GenerateNewToken("vk", result.UserId.ToString())}");
         }

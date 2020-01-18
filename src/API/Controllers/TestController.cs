@@ -8,9 +8,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace API.Controllers
 {
-    [Route("[Controller]")]
     [Authorize]
     [ApiController]
+    [Route("[Controller]")]
     public class TestController : ControllerBase
     {
         private IHostEnvironment _environment;
