@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Data" />
     <Folder Include="Domain" />
+    <Folder Include="Repositories" />
   </ItemGroup>
 
   <ItemGroup>
