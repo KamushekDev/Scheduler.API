@@ -12,13 +12,13 @@ namespace Parser
 {
     public class LetiTimetableParser : ITimetableParser
     {
-        public Task<List<ITimetable>> ParseTimetable(Stream pathToFile, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default)
+        public Task<ITimetable> ParseTimetable(Stream pathToFile, IProgress<IParserProgress> progressReporter = default, CancellationToken ct = default)
         {
             using var workbook = new XLWorkbook(pathToFile);
             var worksheets = workbook.Worksheets;
-            var timetable = new List<ITimetable>();
+            ITimetable timetable = new Timetable();
             foreach (IXLWorksheet ws in worksheets)
-                timetable.Add(Parsing(ws));
+                Parsing(ws,timetable);
 
             return Task.FromResult(timetable);
 
@@ -30,10 +30,8 @@ namespace Parser
             //https://devblogs.microsoft.com/dotnet/async-in-4-5-enabling-progress-and-cancellation-in-async-apis/
         }
 
-        private ITimetable Parsing(IXLWorksheet worksheet)
+        private void Parsing(IXLWorksheet worksheet, ITimetable timetable)
         {
-            Timetable timetable = new Timetable();
-
             //нужно получить список групп
             //из них поймем длину таблицы (*кол-во столбцов)
             const int firstGroup = 4; //где неачинается полезная информация
@@ -89,7 +87,7 @@ namespace Parser
                 pastDaysBuffer += lessonsCount * 4 + 1;
             }
 
-            return timetable;
+            //return timetable;
         }
 
         private Lesson GetLessonData(IXLWorksheet worksheet, IXLRangeRow groupRow, IXLRange currentRange, int currentColumn, int day, int time, int checkedWeek)
