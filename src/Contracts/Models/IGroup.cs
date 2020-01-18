@@ -4,11 +4,11 @@ namespace Contracts.Models
 {
     public interface IGroup
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public AccessModifier Access { get; set; }
-        public string InviteTag { get; set; }
-        public string Description { get; set; }
-        public ICollection<IUser> Users { get; set; }
+        public int Id { get; }
+        public string Name { get; }
+        public AccessModifier Access { get; }
+        public string InviteTag { get; }
+        public string Description { get; }
+        public ICollection<IUser> Users { get; }
     }
 }

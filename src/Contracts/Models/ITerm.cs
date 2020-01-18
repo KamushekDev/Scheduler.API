@@ -4,9 +4,9 @@ namespace Contracts.Models
 {
     public interface ITerm
     {
-        public int Id { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public string Description { get; set; }
+        public int Id { get; }
+        public DateTime StartDate { get; }
+        public DateTime EndDate { get; }
+        public string Description { get; }
     }
 }
