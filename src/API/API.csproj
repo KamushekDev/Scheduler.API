@@ -29,4 +29,8 @@
     <ProjectReference Include="..\Parser\Parser.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Attributes" />
+  </ItemGroup>
+
 </Project>
