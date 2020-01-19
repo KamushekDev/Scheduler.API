@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Contracts.Models;
+using Contracts.Interfaces.Models;
 
-namespace Contracts.Repositories
+namespace Contracts.Interfaces.Repositories
 {
     public interface IClassesRepository
     {
