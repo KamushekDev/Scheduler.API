@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace Contracts.Models
 {
-    public class Lesson : ILesson
+    public class Room: IRoom
     {
-        public Lesson(string name, string description)
+        public Room(string name, string description)
         {
             Name = name;
             Description = description;

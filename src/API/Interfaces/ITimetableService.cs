@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Contracts.Models;
+using Contracts.Interfaces.Models;
 
 namespace API.Interfaces
 {
     public interface ITimetableService
     {
-        Task<List<Class>> GetTimetableByGroups(IEnumerable<string> groups);
+        public Task<List<IClass>> GetClassesByGroup(int group);
     }
 }

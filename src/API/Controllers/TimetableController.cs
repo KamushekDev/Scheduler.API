@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using API.Interfaces;
-using Contracts.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -20,17 +17,13 @@ namespace API.Controllers
         public async Task<IActionResult> GetTimetable()
         {
             // тут типо получаем из учетки
-            var groups = new List<string>();
+            var groupId = 1;
             if (false)
             {
                 return Unauthorized();
             }
-            else
-            {
-                groups.Add("6374");
-                groups.Add("6371");
-            }
-            var result = await _timetableService.GetTimetableByGroups(groups);
+            
+            var result = await _timetableService.GetClassesByGroup(groupId);
             return Json(result);
         }
     }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Contracts.Models
+namespace Contracts.Interfaces.Models
 {
     public interface IUser
     {

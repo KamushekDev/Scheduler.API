@@ -1,4 +1,4 @@
-namespace Contracts.Models
+namespace Contracts.Interfaces.Models
 {
     public interface IClassType
     {
