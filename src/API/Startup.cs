@@ -1,5 +1,8 @@
 using System.Text;
+using API.Interfaces;
+using API.Services;
 using API.Models;
+using Contracts.Interfaces.Repositories;
 using Data.Dapper.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,6 +37,9 @@ namespace API
             services.AddSingleton<BaseDataAcсess>();
             services.AddSingleton(authSettings);
             services.AddScoped<LetiTimetableParser>();
+            services.AddSingleton<ITimetableService, TimetableService>();
+            services.AddSingleton<IClassesRepository, ClassesRepository>();
+            
             
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
                 {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Contracts.Interfaces.Models;
 using Contracts.Models;
 
 namespace Contracts.Repositories

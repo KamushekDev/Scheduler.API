@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Contracts.Enums;
+using Contracts.Models;
 
-namespace Contracts.Models
+namespace Contracts.Interfaces.Models
 {
     public interface IGroup
     {

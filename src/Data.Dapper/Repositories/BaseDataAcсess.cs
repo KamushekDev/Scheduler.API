@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Contracts.Helpers;
 using Dapper;
+using Npgsql;
 
 namespace Data.Dapper.Repositories
 {
@@ -22,44 +22,54 @@ namespace Data.Dapper.Repositories
             _timeoutSeconds = DatabaseConfiguration.TimeoutSeconds;
         }
         
+        public async Task<IEnumerable<T>> ExecuteQueryWhichReturnsCollectionAsync<T>(string query,
+            DynamicParameters parameters = null)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync().ConfigureAwait(false);
+            try
+            {
+                var result = await connection.QueryAsync<T>(query, parameters).ConfigureAwait(false);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception in query", ex);
+            }
+        }
+        
         public async Task<IEnumerable<T>> ExecuteStoredProcedureWhichReturnsCollectionAsync<T>(string procedure,
             DynamicParameters parameters = null)
         {
-            using (var cts = new CancellationTokenSource(_timeoutSeconds * 1000))
+            using var cts = new CancellationTokenSource(_timeoutSeconds * 1000);
+            var cd = new CommandDefinition(procedure, parameters, commandType: CommandType.StoredProcedure, cancellationToken: cts.Token, commandTimeout: _timeoutSeconds);
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync(cts.Token).ConfigureAwait(false);
+            try
             {
-                var cd = new CommandDefinition(procedure, parameters, commandType: CommandType.StoredProcedure, cancellationToken: cts.Token, commandTimeout: _timeoutSeconds);
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    await connection.OpenAsync(cts.Token).ConfigureAwait(false);
-                    try
-                    {
-                        return await connection.QueryAsync<T>(cd).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"Exception in {procedure}", ex);
-                    }
-                }
+                var result = await connection.QueryAsync<T>(cd).ConfigureAwait(false);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Exception in {procedure}", ex);
             }
         }
 
         public async Task ExecuteVoidStoredProcedureAsync(string procedure, DynamicParameters parameters = null)
         {
-            using (var cts = new CancellationTokenSource(_timeoutSeconds * 1000))
+            using var cts = new CancellationTokenSource(_timeoutSeconds * 1000);
+            var cd = new CommandDefinition(procedure, parameters, commandType: CommandType.StoredProcedure, cancellationToken: cts.Token, commandTimeout: _timeoutSeconds);
+            
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync(cts.Token).ConfigureAwait(false);
+            try
             {
-                var cd = new CommandDefinition(procedure, parameters, commandType: CommandType.StoredProcedure, cancellationToken: cts.Token, commandTimeout: _timeoutSeconds);
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    await connection.OpenAsync(cts.Token).ConfigureAwait(false);
-                    try
-                    {
-                        await connection.ExecuteAsync(cd).ConfigureAwait(false);
-                    }
-                    catch (SqlException ex)
-                    {
-                        throw new Exception($"Exception in {procedure}", ex);
-                    }
-                }
+                await connection.ExecuteAsync(cd).ConfigureAwait(false);
+            }
+            catch (NpgsqlException ex)
+            {
+                throw new Exception($"Exception in {procedure}", ex);
             }
         }
         
@@ -70,5 +80,7 @@ namespace Data.Dapper.Repositories
                 .ConfigureAwait(false);
             return result.FirstOrDefault();
         }
+        
+        
     }
 }

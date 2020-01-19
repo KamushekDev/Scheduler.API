@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
+using Contracts.Interfaces.Models;
 using Contracts.Models;
 
 namespace Contracts.Repositories
 {
-    public interface IExamsRepository
+    public interface ILessonsRepository
     {
-        public Task<IExam> GetById(int id);
+        public Task<ILesson> GetByName(string name);
         
         //todo: add & update logic
         //Думаю, что тут тебе самому будет удобнее сделать, что тебе надо
