@@ -1,16 +1,16 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace API.Models
 {
-    internal class VkAccessTokenResponse
+    public class VkAccessTokenResponse
     {
-        [JsonProperty("access_token")]
-        internal string AccessToken { get; set; }
+        [JsonPropertyName("access_token")]
+        public string AccessToken { get; set; }
 
-        [JsonProperty("expires_in")]
-        internal int ExpiresIn { get; set; }
+        [JsonPropertyName("expires_in")]
+        public int ExpiresIn { get; set; }
 
-        [JsonProperty("user_id")]
-        internal int UserId { get; set; }
+        [JsonPropertyName("user_id")]
+        public int UserId { get; set; }
     }
 }
