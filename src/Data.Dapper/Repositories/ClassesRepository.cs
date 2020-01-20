@@ -9,9 +9,9 @@ namespace Data.Dapper.Repositories
 {
     public class ClassesRepository : IClassesRepository
     {
-        private readonly BaseDataAcсess _bda;
+        private readonly DatabaseService _bda;
 
-        public ClassesRepository(BaseDataAcсess bda)
+        public ClassesRepository(DatabaseService bda)
         {
             _bda = bda;
         }

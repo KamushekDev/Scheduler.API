@@ -7,11 +7,11 @@ using Npgsql;
 
 namespace Data.Dapper
 {
-    public class BaseDataAcсess
+    public class DatabaseService
     {
         private readonly DatabaseConfiguration _databaseConfiguration;
 
-        public BaseDataAcсess(DatabaseConfiguration databaseConfiguration)
+        public DatabaseService(DatabaseConfiguration databaseConfiguration)
         {
             _databaseConfiguration = databaseConfiguration;
         }

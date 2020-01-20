@@ -1,6 +1,7 @@
 using Contracts.Helpers;
 using Contracts.Repositories;
 using Data.Dapper;
+using Data.Dapper.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +16,7 @@ namespace API.Extensions
             var databaseConfiguration = new DatabaseConfiguration(connectionString);
 
             services.AddSingleton(databaseConfiguration);
-            services.AddScoped<BaseDataAcсess>();
+            services.AddScoped<DatabaseService>();
 
             services.AddRepositories();
             
