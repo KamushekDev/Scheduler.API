@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
 using Contracts.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [Route("[Controller]")]
+    [Authorize]
     public class TaskController : ControllerBase
     {
         [HttpGet]

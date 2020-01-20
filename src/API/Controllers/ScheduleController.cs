@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Contracts.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Parser;
@@ -8,6 +9,7 @@ namespace API.Controllers
 {
     //todo: авторизация с РОЛЯМИ БЛЯДЬ
     [Route("[Controller]")]
+    [Authorize]
     public class ScheduleController : ControllerBase
     {
         [HttpPost("leti")]
