@@ -1,9 +1,16 @@
 ﻿namespace Contracts.Helpers
 {
-    public static class DatabaseConfiguration
+    public class DatabaseConfiguration
     {
-        public static string ConnectionString = "Database=;Server=;Integrated Security=False;uid=;pwd=;";
+        public string ConnectionString { get; }
 
-        public static int TimeoutSeconds = 5;
+        public int TimeoutSeconds { get; }
+
+        public DatabaseConfiguration(string connectionString, int timeoutSeconds = 5)
+        {
+            ConnectionString = connectionString;
+            TimeoutSeconds = timeoutSeconds;
+        }
+        
     }
 }

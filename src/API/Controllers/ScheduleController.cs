@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Contracts.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Parser;
@@ -9,9 +10,9 @@ namespace API.Controllers
     [Route("[Controller]")]
     public class ScheduleController : ControllerBase
     {
-
         [HttpPost("leti")]
-        public async Task<IActionResult> ParseLetiSchedule(IFormFile excelFile, [FromServices]LetiTimetableParser parser)
+        public async Task<IActionResult> ParseLetiSchedule(IFormFile excelFile,
+            [FromServices] LetiTimetableParser parser)
         {
             if (excelFile == null || excelFile.Length == 0)
                 return BadRequest();
@@ -19,11 +20,20 @@ namespace API.Controllers
             var stream = excelFile.OpenReadStream();
 
             // var parsedResult = parser.ParseTimetable(stream);
-            
+
             //todo: Парсинг расписания
-            
+
             return Ok();
         }
-        
+
+        [HttpGet]
+        public async Task<IActionResult> GetSchedule([FromServices]IClassesRepository classesRepository)
+        {
+            var userId = 1;
+
+            var response = await classesRepository.GetUserClasses(userId);
+            
+            return Ok(response);
+        }
     }
 }
