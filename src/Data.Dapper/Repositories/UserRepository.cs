@@ -32,7 +32,8 @@ namespace Data.Dapper.Repositories
         {
             const string query =
                 @"update users set name=@name, surname=@surname where id=@userId";
-            var response = await _databaseAccess.ExecuteAsync(query, new {userId = userId, name = name, surname = surname});
+            var response =
+                await _databaseAccess.ExecuteAsync(query, new {userId = userId, name = name, surname = surname});
 
             return response == 1;
         }
@@ -61,7 +62,18 @@ namespace Data.Dapper.Repositories
             const string query =
                 @"insert into users_to_groups (user_id, group_id, date_entry) values (@userId, @groupId, @dateEntry);";
 
-            var response = await _databaseAccess.ExecuteAsync(query, new {userId = userId, groupId = groupId, dateEntry = DateTime.Now});
+            var response = await _databaseAccess.ExecuteAsync(query,
+                new {userId = userId, groupId = groupId, dateEntry = DateTime.Now});
+
+            return response == 1;
+        }
+
+        public async Task<bool> LeaveGroup(int userId, int groupId)
+        {
+            const string query =
+                @"delete from users_to_groups where group_id=@groupId and user_id=@userId;";
+
+            var response = await _databaseAccess.ExecuteAsync(query, new {userId = userId, groupId = groupId});
 
             return response == 1;
         }

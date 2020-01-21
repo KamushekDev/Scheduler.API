@@ -16,5 +16,6 @@ namespace Contracts.Repositories
             string email = null);
 
         public Task<bool> JoinGroup(int userId, int groupId);
+        Task<bool> LeaveGroup(int userId, int groupId);
     }
 }

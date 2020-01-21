@@ -127,14 +127,16 @@ namespace Data.Dapper.Repositories
         public async Task<IEnumerable<IGroup>> GetPublicGroupsWithoutUser(int userId)
         {
             const string query =
-                @"select id as groupId,
-                         name as groupName,
-                         role as userRole,
-                         date_entry as entryDate,
-                         invite_tag as inviteLink
-                  from groups
-                  left join users_to_groups utg on groups.id = utg.group_id
-                  where date_exit is null and access = 'Public' and (user_id is null or user_id != @userId);";
+                @"select distinct id         as groupId,
+                                  name       as groupName,
+                                  invite_tag as inviteLink,
+                                  *
+                  from groups g
+                  where g.access = 'Public'
+                    and g.id not in (select distinct group_id
+                                     from users_to_groups
+                                     where user_id = @userId
+                                       and date_exit is null)";
             var response = await _databaseAccess.ExecuteQueryAsync<GroupDto>(query,
                 new
                 {

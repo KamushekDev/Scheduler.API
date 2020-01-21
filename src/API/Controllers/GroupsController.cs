@@ -32,7 +32,7 @@ namespace API.Controllers
         }
 
         [HttpPost("Join/{tag}")]
-        public async Task<IActionResult> GetPublicGroupsWithoutMe(string tag,
+        public async Task<IActionResult> JoinGroup(string tag,
             [FromServices] IUserRepository userRepository, [FromServices] IGroupRepository groupRepository)
         {
             var userId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "userId").Value);
@@ -44,6 +44,17 @@ namespace API.Controllers
             return result ? (IActionResult) Ok() : BadRequest();
         }
 
+        [HttpDelete("Leave/{groupId}")]
+        public async Task<IActionResult> JoinGroup(int groupId,
+            [FromServices] IUserRepository userRepository)
+        {
+            var userId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "userId").Value);
+
+            var result = await userRepository.LeaveGroup(userId, groupId);
+
+            return result ? (IActionResult) Ok() : BadRequest();
+        }
+        
         public class GroupModel
         {
             public string Name { get; set; }

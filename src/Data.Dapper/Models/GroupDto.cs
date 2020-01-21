@@ -14,13 +14,13 @@ namespace Data.Dapper.Models
         public class Group : IGroup
         {
             public int Id { get; }
-            public string GroupName { get; }
+            public string Name { get; }
             public string InviteLink { get; }
 
-            public Group(int id, string groupName, string inviteLink)
+            public Group(int id, string name, string inviteLink)
             {
                 Id = id;
-                GroupName = groupName;
+                Name = name;
                 InviteLink = inviteLink;
             }
         }

@@ -9,7 +9,7 @@ namespace Data.Dapper.Models
         public string lessonname { get; set; }
         public string roomname { get; set; }
         public TimeSpan classtime { get; set; }
-        public int duration { get; set; }
+        public int classduration { get; set; }
         public string classtype { get; set; }
         public string groupname { get; set; }
         public string teachername { get; set; }
@@ -26,7 +26,7 @@ namespace Data.Dapper.Models
                 surname = teachersurname,
                 patronymic = teacherpatronymic
             }.ToModel();
-            var classModel = new Class(classid, lessonname, roomname, classtime, duration, classtype, groupname,
+            var classModel = new Class(classid, lessonname, roomname, classtime, classduration, classtype, groupname,
                 teacher, weektype, daynumber);
             return classModel;
         }
