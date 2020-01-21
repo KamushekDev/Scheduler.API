@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.Models;
@@ -84,22 +85,43 @@ namespace Data.Dapper.Repositories
             return result == 1;
         }
 
-        public async Task<int> CreateGroup(string name, string description = null)
+        public async Task<int> CreateGroup(int userId, string name, string description = null)
         {
-            var tag = $"{name}_{description}_{DateTime.Now}".GetHashCode().ToString();
+            var tag = Math.Abs($"{name}_{description}_{DateTime.Now}".GetHashCode()).ToString();
 
             const string query =
-                @"insert into groups (name, invite_tag, description) values (@name, @tag, @description) returning id";
+                @"insert into groups (name, invite_tag, description) values (@name, @tag, @description) returning id;";
 
-            var response = await _databaseAccess.ExecuteQueryFirstOrDefaultAsync<int>(query,
-                new
+            var connection = await _databaseAccess.GetConnectionAsync();
+
+            var transaction = await connection.BeginTransactionAsync();
+            
+            try
+            {
+                var groupId = await connection.ExecuteScalarAsync<int>(query, new
                 {
                     name = name,
                     description = description,
                     tag = tag
                 });
+                const string query2 =
+                    @"insert into users_to_groups (user_id, group_id, role, date_entry) values (@userId, @groupId, 'Headman', NOW());";
 
-            return response;
+                var result = await connection.ExecuteAsync(query2, new {userId = userId, groupId = groupId});
+
+                if (result == 1)
+                    await transaction.CommitAsync();
+                else
+                    await transaction.RollbackAsync();
+
+                return groupId;
+            }
+            catch
+            {
+                await transaction.DisposeAsync();
+            }
+
+            return -1;
         }
 
         public async Task<IEnumerable<IGroup>> GetPublicGroupsWithoutUser(int userId)

@@ -44,14 +44,21 @@ namespace API.Controllers
             return result ? (IActionResult) Ok() : BadRequest();
         }
 
+        public class GroupModel
+        {
+            public string Name { get; set; }
+            public string Description { get; set; }
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreateGroup([FromServices] IGroupRepository groupRepository)
+        public async Task<IActionResult> CreateGroup([FromBody] GroupModel group,
+            [FromServices] IGroupRepository groupRepository)
         {
             var userId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "userId").Value);
 
-            var response = await groupRepository.GetPublicGroupsWithoutUser(userId);
+            var response = await groupRepository.CreateGroup(userId, group.Name, group.Description);
 
-            return Ok(response);
+            return response == -1 ? (IActionResult) BadRequest() : Ok(response);
         }
 
         [HttpPost("{groupId}/Open")]

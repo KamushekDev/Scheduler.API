@@ -17,7 +17,7 @@ namespace Data.Dapper
             _databaseConfiguration = databaseConfiguration;
         }
 
-        private async Task<NpgsqlConnection> GetConnection()
+        public async Task<NpgsqlConnection> GetConnectionAsync()
         {
             var connection = new NpgsqlConnection(_databaseConfiguration.ConnectionString);
 
@@ -29,7 +29,7 @@ namespace Data.Dapper
         public async Task<IEnumerable<T>> ExecuteQueryAsync<T>(string query,
             object parameters = null)
         {
-            var connection = await GetConnection();
+            var connection = await GetConnectionAsync();
             await using (connection.ConfigureAwait(false))
             {
                 try
@@ -46,7 +46,7 @@ namespace Data.Dapper
         public async Task<T> ExecuteQueryFirstOrDefaultAsync<T>(string query,
             object parameters = null)
         {
-            var connection = await GetConnection();
+            var connection = await GetConnectionAsync();
             await using (connection.ConfigureAwait(false))
             {
                 try
@@ -63,7 +63,7 @@ namespace Data.Dapper
         public async Task<int> ExecuteAsync(string query,
             object parameters = null)
         {
-            var connection = await GetConnection();
+            var connection = await GetConnectionAsync();
             await using (connection.ConfigureAwait(false))
             {
                 try
@@ -79,7 +79,7 @@ namespace Data.Dapper
         
         public async Task<int> ExecuteAsync(string query,
             params NpgsqlParameter[] parameters) {
-            var connection = await GetConnection();
+            var connection = await GetConnectionAsync();
 
             await using (var cmd = new NpgsqlCommand(query, connection))
             {
