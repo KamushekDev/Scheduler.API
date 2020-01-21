@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Contracts.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +13,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTasks([FromServices] ITaskRepository taskRepository)
         {
-            var userId = 1;
+            var userId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "userId").Value);
             var result = await taskRepository.GetUserTasks(userId);
             return Ok(result);
         }

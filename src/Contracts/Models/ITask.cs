@@ -4,11 +4,11 @@ namespace Contracts.Models
 {
     public interface ITask
     {
-        public int Id { get; }
-        public DateTime Begin { get; }
-        public DateTime End { get; }
-        public string TaskName { get; }
-        public string LessonName { get; }
-        public string Description { get; }
+        int Id { get; }
+        DateTime Begin { get; }
+        DateTime End { get; }
+        string TaskName { get; }
+        string LessonName { get; }
+        string Description { get; }
     }
 }

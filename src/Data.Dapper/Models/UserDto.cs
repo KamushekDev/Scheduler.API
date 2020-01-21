@@ -4,28 +4,31 @@ namespace Data.Dapper.Models
 {
     public class UserDto
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Patronymic { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
+        public int id { get; set; }
+        public string name { get; set; }
+        public string surname { get; set; }
+        public string patronymic { get; set; }
+        public string phone { get; set; }
+        public string email { get; set; }
 
 
         public User ToModel()
         {
-            return new User(Name, Surname, Patronymic, Phone, Email);
+            return new User(id, name, surname, patronymic, phone, email);
         }
 
         public class User : IUser
         {
+            public int Id { get; }
             public string Name { get; }
             public string Surname { get; }
             public string Patronymic { get; }
             public string Phone { get; }
             public string Email { get; }
 
-            public User(string name, string surname, string patronymic, string phone, string email)
+            public User(int id, string name, string surname, string patronymic, string phone, string email)
             {
+                Id = id;
                 Name = name;
                 Surname = surname;
                 Patronymic = patronymic;

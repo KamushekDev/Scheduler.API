@@ -16,7 +16,7 @@ namespace API.Extensions
             var databaseConfiguration = new DatabaseConfiguration(connectionString);
 
             services.AddSingleton(databaseConfiguration);
-            services.AddScoped<DatabaseService>();
+            services.AddScoped<DatabaseAccess>();
 
             services.AddRepositories();
             

@@ -5,5 +5,6 @@ namespace API.Models
         public string ClientSecret { get; set; }
         public int ClientId { get; set; }
         public string RedirectUri { get; set; }
+        public string ProviderName { get; set; }
     }
 }

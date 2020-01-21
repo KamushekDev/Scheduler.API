@@ -2,10 +2,11 @@ namespace Contracts.Models
 {
     public interface IUser
     {
-        public string Name { get; }
-        public string Surname { get; }
-        public string Patronymic { get; }
-        public string Phone { get; }
-        public string Email { get; }
+        int Id { get; }
+        string Name { get; }
+        string Surname { get; }
+        string Patronymic { get; }
+        string Phone { get; }
+        string Email { get; }
     }
 }

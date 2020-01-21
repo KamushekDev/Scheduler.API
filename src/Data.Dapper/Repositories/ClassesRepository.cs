@@ -9,9 +9,9 @@ namespace Data.Dapper.Repositories
 {
     public class ClassesRepository : IClassesRepository
     {
-        private readonly DatabaseService _bda;
+        private readonly DatabaseAccess _bda;
 
-        public ClassesRepository(DatabaseService bda)
+        public ClassesRepository(DatabaseAccess bda)
         {
             _bda = bda;
         }
@@ -36,7 +36,7 @@ namespace Data.Dapper.Repositories
                            left join users u on cl.teacher_id = u.id
                   where group_id in (select group_id from users_to_groups where user_id = @userId)
                     and term_id in (select id from terms where start_date < now() and now() < end_date);";
-            var response = await _bda.ExecuteQuery<ClassDto>(query, new {userId = userId});
+            var response = await _bda.ExecuteQueryAsync<ClassDto>(query, new {userId = userId});
 
             return response.Select(x => x.ToModel()).ToArray();
         }

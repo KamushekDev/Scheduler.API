@@ -22,9 +22,9 @@ namespace Data.Dapper.Models
         {
             var teacher = new UserDto()
             {
-                Name = teachername,
-                Surname = teachersurname,
-                Patronymic = teacherpatronymic
+                name = teachername,
+                surname = teachersurname,
+                patronymic = teacherpatronymic
             }.ToModel();
             var classModel = new Class(classid, lessonname, roomname, classtime, duration, classtype, groupname,
                 teacher, weektype, daynumber);
