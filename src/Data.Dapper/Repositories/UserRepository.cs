@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Contracts.Models;
 using Contracts.Repositories;
@@ -53,6 +54,16 @@ namespace Data.Dapper.Repositories
                 });
 
             return response;
+        }
+
+        public async Task<bool> JoinGroup(int userId, int groupId)
+        {
+            const string query =
+                @"insert into users_to_groups (user_id, group_id, date_entry) values (@userId, @groupId, @dateEntry);";
+
+            var response = await _databaseAccess.ExecuteAsync(query, new {userId = userId, groupId = groupId, dateEntry = DateTime.Now});
+
+            return response == 1;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Contracts.Helpers;
+using Contracts.Models;
 using Dapper;
 using Npgsql;
 
@@ -16,18 +17,21 @@ namespace Data.Dapper
             _databaseConfiguration = databaseConfiguration;
         }
 
-        private NpgsqlConnection GetConnection()
+        private async Task<NpgsqlConnection> GetConnection()
         {
-            return new NpgsqlConnection(_databaseConfiguration.ConnectionString);
+            var connection = new NpgsqlConnection(_databaseConfiguration.ConnectionString);
+
+            await connection.OpenAsync();
+
+            return connection;
         }
 
         public async Task<IEnumerable<T>> ExecuteQueryAsync<T>(string query,
             object parameters = null)
         {
-            var connection = GetConnection();
+            var connection = await GetConnection();
             await using (connection.ConfigureAwait(false))
             {
-                await connection.OpenAsync().ConfigureAwait(false);
                 try
                 {
                     return await connection.QueryAsync<T>(query, parameters).ConfigureAwait(false);
@@ -42,10 +46,9 @@ namespace Data.Dapper
         public async Task<T> ExecuteQueryFirstOrDefaultAsync<T>(string query,
             object parameters = null)
         {
-            var connection = GetConnection();
+            var connection = await GetConnection();
             await using (connection.ConfigureAwait(false))
             {
-                await connection.OpenAsync().ConfigureAwait(false);
                 try
                 {
                     return await connection.QueryFirstOrDefaultAsync<T>(query, parameters).ConfigureAwait(false);
@@ -60,10 +63,9 @@ namespace Data.Dapper
         public async Task<int> ExecuteAsync(string query,
             object parameters = null)
         {
-            var connection = GetConnection();
+            var connection = await GetConnection();
             await using (connection.ConfigureAwait(false))
             {
-                await connection.OpenAsync().ConfigureAwait(false);
                 try
                 {
                     return await connection.ExecuteAsync(query, parameters).ConfigureAwait(false);
@@ -72,6 +74,18 @@ namespace Data.Dapper
                 {
                     throw new Exception($"Exception in {nameof(ExecuteQueryAsync)}", ex);
                 }
+            }
+        }
+        
+        public async Task<int> ExecuteAsync(string query,
+            params NpgsqlParameter[] parameters) {
+            var connection = await GetConnection();
+
+            await using (var cmd = new NpgsqlCommand(query, connection))
+            {
+                cmd.Parameters.AddRange(parameters);
+                
+                return await cmd.ExecuteNonQueryAsync();
             }
         }
     }

@@ -1,5 +1,4 @@
 using Contracts.Helpers;
-using Contracts.Repositories;
 using Data.Dapper;
 using Data.Dapper.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +18,7 @@ namespace API.Extensions
             services.AddScoped<DatabaseAccess>();
 
             services.AddRepositories();
+            services.AddMappers();
             
             return services;
         }

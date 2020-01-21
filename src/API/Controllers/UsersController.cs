@@ -9,7 +9,7 @@ namespace API.Controllers
     [Route("[Controller]")]
     [Authorize]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         // GET
         [Route("me")]

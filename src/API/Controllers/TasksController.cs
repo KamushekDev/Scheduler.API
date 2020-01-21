@@ -8,7 +8,7 @@ namespace API.Controllers
 {
     [Route("[Controller]")]
     [Authorize]
-    public class TaskController : ControllerBase
+    public class TasksController : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> GetTasks([FromServices] ITaskRepository taskRepository)

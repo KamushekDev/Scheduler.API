@@ -14,5 +14,7 @@ namespace Contracts.Repositories
             string patronymic = null,
             string phone = null,
             string email = null);
+
+        public Task<bool> JoinGroup(int userId, int groupId);
     }
 }
