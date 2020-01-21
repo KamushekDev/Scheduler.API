@@ -13,29 +13,34 @@ namespace API.Controllers
     [Authorize]
     public class ScheduleController : ControllerBase
     {
-        [HttpPost("leti")]
-        public async Task<IActionResult> ParseLetiSchedule(IFormFile excelFile,
-            [FromServices] LetiTimetableParser parser)
+        [HttpPost("leti/{groupName}")]
+        public async Task<IActionResult> ParseLetiSchedule(string groupName, [FromForm]IFormFile excelFile, 
+            [FromServices] LetiTimetableParser parser, [FromServices] IClassesRepository classesRepository)
         {
             if (excelFile == null || excelFile.Length == 0)
                 return BadRequest();
 
+            var userId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "userId").Value);
+
+
             var stream = excelFile.OpenReadStream();
 
-            // var parsedResult = parser.ParseTimetable(stream);
+            var parsedResult = await parser.ParseTimetable(stream);
 
-            //todo: Парсинг расписания
+            var lessons = parsedResult.Lessons.Where(x => x.Group == groupName).ToArray();
 
-            return Ok();
+            var result = lessons.Any() ? await classesRepository.AddClasses(userId, groupName, lessons) : 0;
+
+            return Ok(result.ToString());
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSchedule([FromServices]IClassesRepository classesRepository)
+        public async Task<IActionResult> GetSchedule([FromServices] IClassesRepository classesRepository)
         {
             var userId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "userId").Value);
 
             var response = await classesRepository.GetUserClasses(userId);
-            
+
             return Ok(response);
         }
     }

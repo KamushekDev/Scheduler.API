@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Contracts.Models;
 
 namespace Contracts.Parser
 {
@@ -40,6 +41,7 @@ namespace Contracts.Parser
         WeekType WeekType { get; }
 
         ITeacher Teacher { get; }
+        DayOfWeek Day { get; }
     }
 
     public enum Time
@@ -52,13 +54,6 @@ namespace Contracts.Parser
         t17_25,
         t19_05,
         t20_45
-    }
-
-    public enum WeekType
-    {
-        Both,
-        Odd,
-        Even
     }
 
     public interface ITeacher

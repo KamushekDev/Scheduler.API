@@ -92,7 +92,7 @@ namespace Data.Dapper.Repositories
             const string query =
                 @"insert into groups (name, invite_tag, description) values (@name, @tag, @description) returning id;";
 
-            var connection = await _databaseAccess.GetConnectionAsync();
+            await using var connection = await _databaseAccess.GetConnectionAsync();
 
             var transaction = await connection.BeginTransactionAsync();
             

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using Contracts.Parser;
 using System.Collections.Generic;
+using Contracts.Models;
 
 namespace Parser
 {
